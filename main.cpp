@@ -13,12 +13,55 @@
 #include <sys/time.h>
 using namespace std;
 
+timeval start, stop;
+pid_t pid1, pid2, pid3;
+const int tick = 1000000;    //time per sched tick in µs
+
+const int size = 10;
+int schedule[2][size] = {0};
+
+int sched_add(pid_t pid, int time){
+
+    for (int pos = 0; pos < size; pos++){
+
+        if (schedule[0][pos] == 0){            
+            schedule[0][pos] = pid;
+            schedule[1][pos] = time;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+void run_sched(){
+
+    gettimeofday(&start, 0);
+
+    for (int pos = 0; pos < size; pos++){
+
+        cout << "Position: " << pos << endl;
+
+        if (schedule[0][pos]){
+
+            kill(schedule[0][pos], SIGCONT);
+            cout << schedule[0][pos] << " Started" << endl;
+            usleep(schedule[1][pos]);
+            kill(schedule[0][pos], SIGSTOP);
+            cout << schedule[0][pos] << " Stopped" << endl;
+        }
+
+        gettimeofday(&stop, 0);
+        if ((stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec > tick){
+            cout << "Time exceeded!" << endl;
+            return;
+        }
+    }
+
+    usleep(tick - (stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec);
+}
+
 int main()
 {
-    timeval start, stop;
-	pid_t pid1, pid2, pid3;
-	double time, old_time;
-
 	pid1 = fork();
 	if (pid1)
 		pid2 = fork();
@@ -30,24 +73,18 @@ int main()
 		kill(pid1, SIGSTOP);
 		kill(pid2, SIGSTOP);
 		kill(pid3, SIGSTOP);
+        cout << "STOP" << endl;
+
+        sched_add(pid1, 10000000);
+        sched_add(pid2, 10000000);
+        sched_add(pid3, 10000000);
+
+        for (int pos = 0; pos < size; pos++){
+            cout << schedule[0][pos] << endl;
+        }
 
 		while(true){
-
-			while(true){
-
-				gettimeofday(&start, 0);
-				//kill(pid1, SIGSTOP);
-				usleep(1000000);
-				//kill(pid1, SIGCONT);
-
-				gettimeofday(&stop, 0);
-				cout << stop.tv_sec - start.tv_sec << "s " << stop.tv_usec - start.tv_usec << "µs" << endl;
-				if ((stop.tv_sec - start.tv_sec)*1000000 + stop.tv_usec - start.tv_usec > 100000)
-					break;
-
-				usleep(1000000);
-			}
-            cout << "Brake check" << endl;
+            run_sched();
 		}
 	}
 
@@ -55,22 +92,26 @@ int main()
 	if (pid1 == 0){
 		int i = 0;
 		while(true){
-			//kill(pid2, SIGSTOP);
 			cout << i << endl;
 			i++;
-			usleep(10000);
+			usleep(1000000);
 		}
 	}
 	if (pid2 == 0){
 		int i = 0;
 		cout << pid1 << endl;
 		while(true){
-			//kill(pid1, SIGSTOP);
 			cout << i << endl;
 			i--;
-			if (i == -5)
-				kill(pid1, SIGCONT);
-			sleep(1);
+            usleep(1000000);
+		}
+	}
+    if (pid3 == 0){
+		int i = 0;
+		while(true){
+			cout << i << endl;
+			i += 100;
+			usleep(1000000);
 		}
 	}
 
