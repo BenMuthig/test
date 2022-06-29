@@ -9,4 +9,4 @@ TO DO:
 	-Beispiel		(B)
 	-Was ist Git? 		(I)
 	-Wie funktionierts?	(I)
-
+	-Formatierung Präsi	(I)
