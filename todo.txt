@@ -1,0 +1,12 @@
+TO DO:
+1. Program
+	-Prozesse auslagern	(I)
+	-Clock() fixen		(I)
+	-Scheduling Funktion	(B)
+
+2. Präsi
+	-How to fertig 		(B)
+	-Beispiel		(B)
+	-Was ist Git? 		(I)
+	-Wie funktionierts?	(I)
+
