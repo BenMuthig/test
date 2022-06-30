@@ -7,6 +7,4 @@ TO DO:
 2. Präsi
 	-How to fertig 		(B)
 	-Beispiel		(B)
-	-Was ist Git? 		(I)
-	-Wie funktionierts?	(I)
 	-Formatierung Präsi	(I)
