@@ -1,0 +1,36 @@
+#include "head.h";
+using namespace std;
+
+
+void scheduler::pid1_do(){
+    if (pid1 == 0){
+		int i = 0;
+		while(true){
+			//kill(pid2, SIGSTOP);
+			cout << i << endl;
+			i++;
+			usleep(10000);
+		}
+	}
+}
+
+void scheduler::pid2_do(){
+    if (pid2 == 0){
+        int i = 0;
+        cout << pid1 << endl;
+        while (true){
+            //kill(pid1, SIGSTOP);
+            cout << i << endl;
+            i--;
+            if (i == -5){
+                kill(pid1, SIGCONT);
+                sleep(1);
+            }
+        }
+    }
+}
+
+void scheduler::pid3_do(){
+
+};
+
