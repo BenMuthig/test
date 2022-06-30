@@ -17,9 +17,11 @@ timeval start, stop;
 pid_t pid1, pid2, pid3;
 const int tick = 1000000;    //time per sched tick in µs
 
+//2D array containing pIDs and schedule durations
 const int size = 10;
 int schedule[2][size] = {0};
 
+//Adds process to schedule for defined time in µs. Process can be added multiple times.
 int sched_add(pid_t pid, int time){
 
     for (int pos = 0; pos < size; pos++){
@@ -33,6 +35,7 @@ int sched_add(pid_t pid, int time){
     return -1;
 }
 
+//Runs scheduled process for specified time.
 void run_sched(){
 
     gettimeofday(&start, 0);
