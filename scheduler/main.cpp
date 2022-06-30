@@ -11,57 +11,25 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/time.h>
+//#include "scheduler.h"
+#include "processes.h"
 using namespace std;
 
-timeval start, stop;
 pid_t pid1, pid2, pid3;
-const int tick = 1000000;    //time per sched tick in µs
+
+timeval start;
+timeval stop;
+const int tick = 1000000;
 
 //2D array containing pIDs and schedule durations
 const int size = 10;
 int schedule[2][size] = {0};
 
 //Adds process to schedule for defined time in µs. Process can be added multiple times.
-int sched_add(pid_t pid, int time){
-
-    for (int pos = 0; pos < size; pos++){
-
-        if (schedule[0][pos] == 0){            
-            schedule[0][pos] = pid;
-            schedule[1][pos] = time;
-            return 0;
-        }
-    }
-    return -1;
-}
+int sched_add(pid_t pid, int time);
 
 //Runs scheduled process for specified time.
-void run_sched(){
-
-    gettimeofday(&start, 0);
-
-    for (int pos = 0; pos < size; pos++){
-
-        cout << "Position: " << pos << endl;
-
-        if (schedule[0][pos]){
-
-            kill(schedule[0][pos], SIGCONT);
-            cout << schedule[0][pos] << " Started" << endl;
-            usleep(schedule[1][pos]);
-            kill(schedule[0][pos], SIGSTOP);
-            cout << schedule[0][pos] << " Stopped" << endl;
-        }
-
-        gettimeofday(&stop, 0);
-        if ((stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec > tick){
-            cout << "Time exceeded!" << endl;
-            return;
-        }
-    }
-
-    usleep(tick - (stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec);
-}
+void run_sched();
 
 int main()
 {
@@ -119,4 +87,46 @@ int main()
 	}
 
 	return 0;
+}
+
+//Adds process to schedule for defined time in µs. Process can be added multiple times.
+int sched_add(pid_t pid, int time){
+
+    for (int pos = 0; pos < size; pos++){
+
+        if (schedule[0][pos] == 0){            
+            schedule[0][pos] = pid;
+            schedule[1][pos] = time;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+//Runs scheduled process for specified time.
+void run_sched(){
+
+    gettimeofday(&start, 0);
+
+    for (int pos = 0; pos < size; pos++){
+
+        cout << "Position: " << pos << endl;
+
+        if (schedule[0][pos]){
+
+            kill(schedule[0][pos], SIGCONT);
+            cout << schedule[0][pos] << " Started" << endl;
+            usleep(schedule[1][pos]);
+            kill(schedule[0][pos], SIGSTOP);
+            cout << schedule[0][pos] << " Stopped" << endl;
+        }
+
+        gettimeofday(&stop, 0);
+        if ((stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec > tick){
+            cout << "Time exceeded!" << endl;
+            return;
+        }
+    }
+
+    usleep(tick - (stop.tv_sec - start.tv_sec)/1000000 + stop.tv_usec - start.tv_usec);
 }
