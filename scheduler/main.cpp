@@ -19,7 +19,7 @@ pid_t pid1, pid2, pid3;
 
 timeval start;
 timeval stop;
-const int tick = 1000000;
+const int tick = 100000;
 
 //2D array containing pIDs and schedule durations
 const int size = 10;
